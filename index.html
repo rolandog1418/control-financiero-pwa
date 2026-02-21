@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control Financiero</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 16px;
+      max-width: 400px;
+      margin: auto;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      background: #22c55e;
+      color: white;
+      font-weight: bold;
+    }
+    .gasto {
+      background: #ef4444;
+    }
+    .mensaje {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>💰 Control Financiero</h1>
+
+<div class="card">
+  <select id="tipo">
+    <option value="Ingreso">Ingreso</option>
+    <option value="Gasto">Gasto</option>
+  </select>
+
+  <input type="text" id="concepto" placeholder="Concepto" />
+  <input type="number" id="monto" placeholder="Monto" />
+
+  <button onclick="guardar()">Guardar</button>
+
+  <div class="mensaje" id="mensaje"></div>
+</div>
+
+<script>
+  function guardar() {
+    const tipo = document.getElementById("tipo").value;
+    const concepto = document.getElementById("concepto").value;
+    const monto = document.getElementById("monto").value;
+
+    if (!concepto || !monto) {
+      mostrar("Todos los campos son obligatorios");
+      return;
+    }
+
+    let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+
+    movimientos.push({
+      fecha: new Date().toISOString(),
+      tipo,
+      concepto,
+      monto: tipo === "Gasto" ? -Math.abs(monto) : Number(monto)
+    });
+
+    localStorage.setItem("movimientos", JSON.stringify(movimientos));
+
+    mostrar("Guardado correctamente ✅");
+
+    document.getElementById("concepto").value = "";
+    document.getElementById("monto").value = "";
+  }
+
+  function mostrar(texto) {
+    document.getElementById("mensaje").innerText = texto;
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
+</script>
+
+</body>
+</html>
